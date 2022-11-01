@@ -18,12 +18,10 @@ export type GetUserCookie = (
 export const getUserCookie: GetUserCookie = async (request, args) => {
   const cookieHeader = request.headers.get('Cookie');
 
-  const user = await loginCookie.parse(cookieHeader);
+  const payload = await loginCookie.parse(cookieHeader);
 
-  console.log(args?.failRedirect);
+  if (args?.failRedirect && !payload) return redirect(args.failRedirect);
+  if (args?.successRedirect && payload) return redirect(args.successRedirect);
 
-  if (args?.failRedirect && !user) return redirect(args.failRedirect);
-  if (args?.successRedirect && user) return redirect(args.successRedirect);
-
-  return user;
+  return payload;
 };
