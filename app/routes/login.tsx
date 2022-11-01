@@ -1,4 +1,5 @@
-import { json, LoaderArgs, redirect } from '@remix-run/node';
+import type { LoaderArgs } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import type { ActionFunction } from '@remix-run/node';
 
 import { makeDomainFunction } from 'domain-functions';
