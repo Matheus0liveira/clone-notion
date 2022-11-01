@@ -8,13 +8,18 @@ export const LoginPage: Component = () => {
     <div className='w-screen h-screen flex items-center justify-center'>
       <Form
         schema={loginSchema}
+        action='/login'
         method='post'
         className='w-full max-w-md bg-white border rounded-sm text-slate-600 p-4'
       >
-        {({ register, formState: { errors } }) => (
+        {({
+          Errors,
+          Button,
+          register,
+          formState: { errors, isSubmitting },
+        }) => (
           <>
             <h1 className='font-bold mb-4 text-xl'>Login</h1>
-
             <TextField
               label='Email'
               type='email'
@@ -28,12 +33,13 @@ export const LoginPage: Component = () => {
               {...register('password')}
             />
 
-            <button
+            <Errors className='text-red-400 font-medium' />
+            <Button
               type='submit'
               className='w-full mt-8 p-4 bg-indigo-600 text-white rounded-sm hover:bg-indigo-800 transition-all uppercase'
             >
-              Confirm
-            </button>
+              {isSubmitting ? 'Loading' : 'Confirm'}
+            </Button>
           </>
         )}
       </Form>

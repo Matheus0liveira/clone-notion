@@ -1,22 +1,31 @@
+import { json } from '@remix-run/node';
 import type { ActionFunction } from '@remix-run/node';
 
 import { makeDomainFunction } from 'domain-functions';
-import { formAction } from 'remix-forms';
+import { performMutation } from 'remix-forms';
 
-import { LoginPage } from '~/features/login/login.page';
-import { loginSchema } from '~/features/login/schemas/login.schema';
+import { LoginPage, loginSchema } from '~/features/login';
+import { LoginService } from '~/features/login/services/login.service.server';
 
-const mutation = makeDomainFunction(loginSchema)(async (values) => values);
+const mutation = makeDomainFunction(loginSchema)(async (values) => {
+  const loginService = new LoginService();
+  const token = await loginService.login(values);
+
+  return token;
+});
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log(JSON.stringify(request, null, 2));
-
-  return formAction({
+  const result = await performMutation({
     request,
     schema: loginSchema,
     mutation,
-    successPath: '/login',
   });
+
+  if (!result.success) return result;
+
+  console.log({ result });
+
+  return json(result);
 };
 
 export default function Login() {
