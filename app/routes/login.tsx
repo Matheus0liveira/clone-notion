@@ -5,12 +5,12 @@ import type { ActionFunction } from '@remix-run/node';
 import { makeDomainFunction } from 'domain-functions';
 import { performMutation } from 'remix-forms';
 
-import { LoginPage, loginSchema } from '~/features/login';
-import { LoginService } from '~/features/login/services/login.service.server';
+import { LoginPage, loginSchema } from '~/features/user';
+import { UserService } from '~/features/user';
 import { getUserCookie, loginCookie } from '~/services';
 
 const mutation = makeDomainFunction(loginSchema)(async (values) => {
-  const loginService = new LoginService();
+  const loginService = new UserService();
   const payload = await loginService.login(values);
 
   return payload;

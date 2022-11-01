@@ -1,5 +1,5 @@
-export namespace Login {
-  export type User = {
+export namespace User {
+  export type Login = {
     email: string;
     password: string;
   };

@@ -1,5 +1,5 @@
 import { createCookie, redirect } from '@remix-run/node';
-import type { Login } from '~/features/login';
+import type { User } from '~/features/user';
 
 export const loginCookie = createCookie('login', {
   maxAge: 31_536_000, // one year
@@ -13,7 +13,7 @@ export type GetUserCookieArgs = {
 export type GetUserCookie = (
   request: Request,
   args?: Partial<GetUserCookieArgs>
-) => Promise<Login.SessionUser | null>;
+) => Promise<User.SessionUser | null>;
 
 export const getUserCookie: GetUserCookie = async (request, args) => {
   const cookieHeader = request.headers.get('Cookie');

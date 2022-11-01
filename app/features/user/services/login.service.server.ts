@@ -1,10 +1,10 @@
-import type { Login } from '../types';
+import type { User } from '../types';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { db } from '~/db/utils/db.server';
 
-export class LoginService {
-  async login({ email, password }: Login.User) {
+export class UserService {
+  async login({ email, password }: User.Login) {
     const user = await db.user.findUnique({ where: { email } });
 
     if (!user) throw 'U - password/email incorrect';

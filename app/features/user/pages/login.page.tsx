@@ -1,7 +1,7 @@
 import type { Component } from '~/types/Component';
-import { TextField } from './components';
+import { TextField } from '../components';
 import { Form } from 'remix-forms';
-import { loginSchema } from './schemas/login.schema';
+import { loginSchema } from '../schemas/login.schema';
 
 export const LoginPage: Component = () => {
   return (
