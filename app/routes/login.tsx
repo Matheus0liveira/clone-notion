@@ -1,4 +1,4 @@
-import { json } from '@remix-run/node';
+import { json, LoaderArgs, redirect } from '@remix-run/node';
 import type { ActionFunction } from '@remix-run/node';
 
 import { makeDomainFunction } from 'domain-functions';
@@ -6,12 +6,13 @@ import { performMutation } from 'remix-forms';
 
 import { LoginPage, loginSchema } from '~/features/login';
 import { LoginService } from '~/features/login/services/login.service.server';
+import { getUserCookie, loginCookie } from '~/services';
 
 const mutation = makeDomainFunction(loginSchema)(async (values) => {
   const loginService = new LoginService();
-  const token = await loginService.login(values);
+  const payload = await loginService.login(values);
 
-  return token;
+  return payload;
 });
 
 export const action: ActionFunction = async ({ request }) => {
@@ -23,9 +24,15 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (!result.success) return result;
 
-  console.log({ result });
+  return redirect('/', {
+    headers: {
+      'Set-Cookie': await loginCookie.serialize(result.data),
+    },
+  });
+};
 
-  return json(result);
+export const loader = async ({ request }: LoaderArgs) => {
+  return await getUserCookie(request, { successRedirect: '/' });
 };
 
 export default function Login() {
