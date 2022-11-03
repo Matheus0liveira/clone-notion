@@ -19,6 +19,17 @@ export class UserService {
       token: jwt.sign(payload, process.env.JWT_SECRET!),
     };
   }
+  async create({ name, email, password }: User.Create) {
+    const existsUser = await db.user.findUnique({ where: { email } });
+
+    if (existsUser) throw 'User exists';
+
+    const hashPassord = await bcrypt.hash(password, 10);
+
+    return db.user.create({
+      data: { email, name, password: hashPassord },
+    });
+  }
 
   async getUserById({ id }: User.GetUserById) {
     const user = await db.user.findUnique({ where: { id } });

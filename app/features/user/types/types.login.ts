@@ -3,6 +3,11 @@ export namespace User {
     email: string;
     password: string;
   };
+  export type Create = {
+    name: string;
+    email: string;
+    password: string;
+  };
 
   export type SessionUser = {
     token: string;
