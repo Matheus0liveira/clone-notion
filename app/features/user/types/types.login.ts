@@ -12,4 +12,11 @@ export namespace User {
       name: string;
     };
   };
+
+  export type GetUserById = {
+    id: string;
+  };
+  export type GetUserByEmail = {
+    email: string;
+  };
 }

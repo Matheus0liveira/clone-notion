@@ -192,7 +192,6 @@ export const withShortcuts = (editor: EditorProps) => {
       const range = { anchor, focus: start };
       const beforeText = (Editor.string(editor, range) +
         text.slice(0, -1)) as keyof typeof SHORTCUTS;
-      console.log(beforeText);
       const type = SHORTCUTS[beforeText];
 
       if (type) {

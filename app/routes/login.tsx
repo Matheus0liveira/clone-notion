@@ -25,7 +25,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (!result.success) return result;
 
-  return redirect('/', {
+  return redirect('/notepad', {
     headers: {
       'Set-Cookie': await loginCookie.serialize(result.data),
     },
@@ -33,7 +33,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
-  return await getUserCookie(request, { successRedirect: '/' });
+  return await getUserCookie(request, { successRedirect: '/notepad' });
 };
 
 export default function Login() {

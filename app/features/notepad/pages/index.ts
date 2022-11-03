@@ -1,1 +1,2 @@
-export * from './index.page';
+export * from './notpad.page';
+export * from './list.page';

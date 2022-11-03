@@ -1,11 +1,5 @@
-import type { LoaderArgs } from '@remix-run/node';
-import { NotPadPage } from '~/features/notepad';
-import { getUserCookie } from '~/services';
+import { LoaderFunction, redirect } from '@remix-run/node';
 
-export const loader = async ({ request }: LoaderArgs) => {
-  return await getUserCookie(request, { failRedirect: '/login' });
+export const loader: LoaderFunction = () => {
+  return redirect('/login');
 };
-
-export default function Index() {
-  return <NotPadPage />;
-}

@@ -3,17 +3,21 @@ import { useCallback, useMemo, useRef } from 'react';
 import { Editable, withReact, Slate } from 'slate-react';
 
 import isHotkey from 'is-hotkey';
-import { createEditor, Node } from 'slate';
+import { createEditor } from 'slate';
 import { withHistory } from 'slate-history';
 import { Element, Toolbar } from '../components';
 
 import { toggleMark, withImages, withShortcuts } from '../utils';
 import { MiniToolbar } from '../components/MiniToolbar';
 
-import type { MouseEvent } from 'react';
+import type { Descendant } from 'slate';
+import type { MouseEvent, ChangeEventHandler } from 'react';
 import type { RenderElementProps, RenderLeafProps } from 'slate-react';
 import type { ElementProps } from '../components';
 import { Leaf } from '../components/Leaf';
+import { debounce } from 'lodash';
+import { NotepadService } from '../services';
+import { useParams, useSubmit } from '@remix-run/react';
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -22,10 +26,18 @@ const HOTKEYS = {
   'mod+`': 'code',
 };
 
-export function NotPadPage() {
-  const miniToolbarRef = useRef<HTMLDivElement>(null);
+export type NotPadPageProps = {
+  initialValue: string;
+  title: string;
+};
 
-  const initialValue = [
+export function NotPadPage({ initialValue, title }: NotPadPageProps) {
+  const submit = useSubmit();
+
+  const miniToolbarRef = useRef<HTMLDivElement>(null);
+  const { id } = useParams();
+
+  const defaultInitialValue = initialValue || [
     {
       children: [
         {
@@ -34,6 +46,7 @@ export function NotPadPage() {
       ],
     },
   ];
+
   const editor = useMemo(
     () => withShortcuts(withImages(withHistory(withReact(createEditor())))),
     []
@@ -92,30 +105,48 @@ export function NotPadPage() {
     miniToolbarRef.current.style.pointerEvents = 'none';
   }, []);
 
-  const serialize = (value: Node[]) =>
-    value.map((n) => Node.string(n)).join('\n');
-
-  const deserialize = (string: string) =>
-    string.split('\n').map((text) => ({ children: [{ text }] }));
+  const changeTitle = debounce<ChangeEventHandler<HTMLInputElement>>(
+    async ({ target }) => {
+      submit(
+        { title: target.value },
+        {
+          method: 'patch',
+          action: `/notepad/${id!}/update`,
+          replace: false,
+        }
+      );
+    },
+    2000
+  );
+  const changeContent = debounce(async (content: string) => {
+    submit(
+      { content },
+      {
+        method: 'patch',
+        action: `/notepad/${id!}/update`,
+        replace: false,
+      }
+    );
+  }, 2000);
 
   return (
     <Slate
       //@ts-ignore
       editor={editor}
-      value={initialValue}
+      value={defaultInitialValue as unknown as Descendant[]}
       onChange={(value) => {
         const isAstChange = editor.operations.some(
           (op) => 'set_selection' !== op.type
         );
-        // if (isAstChange) {
-        //   // Save the value to Local Storage.
-        //   localStorage.setItem('content', serialize(value));
-        // }
+        if (isAstChange) changeContent(JSON.stringify(value));
       }}
     >
       <Toolbar />
       <input
         type='text'
+        name='title'
+        defaultValue={title}
+        onChange={changeTitle}
         placeholder='Type your title here ...'
         className=' w-full m-4 bg-transparent outline-none p-4 text-2xl font-bold rounded-md transition-colors'
       />

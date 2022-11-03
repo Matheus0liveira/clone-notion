@@ -19,9 +19,10 @@ export const getUserCookie: GetUserCookie = async (request, args) => {
   const cookieHeader = request.headers.get('Cookie');
 
   const payload = await loginCookie.parse(cookieHeader);
-
-  if (args?.failRedirect && !payload) return redirect(args.failRedirect);
-  if (args?.successRedirect && payload) return redirect(args.successRedirect);
+  console.log(payload);
+  if (args?.failRedirect && !payload?.token) throw redirect(args.failRedirect);
+  if (args?.successRedirect && payload?.token)
+    throw redirect(args.successRedirect);
 
   return payload;
 };
